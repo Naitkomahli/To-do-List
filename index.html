@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimalist Tasker - Logic Version</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-white flex h-screen text-black overflow-hidden">
+
+    <aside class="w-64 bg-[#F5F5F5] border-r border-gray-200 flex flex-col">
+        <div class="p-6">
+            <h1 class="text-xl font-bold tracking-tight">PROJECT TASKER</h1>
+            <button class="mt-8 w-full border-2 border-dashed border-gray-400 py-2 text-sm text-gray-600 hover:border-black hover:text-black transition-all">
+                + Add Project
+            </button>
+        </div>
+        <nav class="flex-1 px-4">
+            <ul class="space-y-2">
+                <li class="bg-gray-200 px-3 py-2 rounded-md font-semibold cursor-pointer">Web Development</li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="flex-1 overflow-y-auto p-12">
+        <h2 id="projectTitle" class="text-3xl font-bold uppercase tracking-wider mb-8">Web Development</h2>
+
+        <div class="flex gap-2 mb-10">
+            <input type="text" id="taskInput" placeholder="Add new task..." 
+                class="flex-1 border border-gray-300 px-4 py-2 focus:outline-none focus:border-black transition-colors">
+            <button onclick="addTask()" class="bg-black text-white px-6 py-2 hover:bg-gray-800 transition-colors">
+                +
+            </button>
+        </div>
+
+        <section class="mb-10">
+            <h3 class="text-sm font-bold text-gray-400 mb-4 uppercase tracking-widest">To Do</h3>
+            <div id="todoList" class="space-y-3">
+                </div>
+        </section>
+
+        <section>
+            <h3 class="text-sm font-bold text-gray-400 mb-4 uppercase tracking-widest">Done</h3>
+            <div id="doneList" class="space-y-3 opacity-60">
+                </div>
+        </section>
+    </main>
+
+    <script>
+        let tasks = [
+            { id: 1, text: "Belajar HTML Dasar", completed: false },
+            { id: 2, text: "Install VS Code", completed: true }
+        ];
+
+        function renderTasks() {
+            const todoList = document.getElementById('todoList');
+            const doneList = document.getElementById('doneList');
+            
+            todoList.innerHTML = '';
+            doneList.innerHTML = '';
+
+            tasks.forEach(task => {
+                const taskHTML = `
+                    <div class="flex items-center justify-between p-4 border border-gray-200 hover:shadow-sm transition-shadow bg-white">
+                        <div class="flex items-center gap-3">
+                            <input type="checkbox" ${task.completed ? 'checked' : ''} 
+                                onchange="toggleTask(${task.id})"
+                                class="w-5 h-5 accent-black cursor-pointer">
+                            <span class="${task.completed ? 'line-through text-gray-400' : ''}">${task.text}</span>
+                        </div>
+                        <button onclick="deleteTask(${task.id})" class="text-gray-400 hover:text-red-500 transition-colors">🗑</button>
+                    </div>
+                `;
+
+                if (task.completed) {
+                    doneList.innerHTML += taskHTML;
+                } else {
+                    todoList.innerHTML += taskHTML;
+                }
+            });
+        }
+
+        function addTask() {
+            const input = document.getElementById('taskInput');
+            if (input.value.trim() === '') return; 
+
+            const newTask = {
+                id: Date.now(), 
+                text: input.value,
+                completed: false
+            };
+
+            tasks.push(newTask);
+            input.value = ''; 
+            renderTasks(); 
+        }
+
+        function toggleTask(id) {
+            tasks = tasks.map(task => {
+                if (task.id === id) {
+                    return { ...task, completed: !task.completed };
+                }
+                return task;
+            });
+            renderTasks();
+        }
+
+        function deleteTask(id) {
+            tasks = tasks.filter(task => task.id !== id);
+            renderTasks();
+        }
+
+        renderTasks();
+
+        document.getElementById('taskInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') addTask();
+        });
+    </script>
+</body>
+</html>
