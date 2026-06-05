@@ -3,7 +3,15 @@ import { ShieldCheck, Laptop, Phone, Wifi, Battery, Signal } from 'lucide-react'
 
 const DeviceFrame = ({ children, islandMessage }) => {
   const [currentTime, setCurrentTime] = useState('');
-  const [showMock, setShowMock] = useState(true);
+  const [showMock, setShowMock] = useState(() => {
+    // Di HP asli (layar kecil <= 430px) atau PWA standalone, langsung tampilkan konten saja tanpa bingkai
+    if (typeof window !== 'undefined') {
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+      const isMobileScreen = window.innerWidth <= 430;
+      return !isStandalone && !isMobileScreen;
+    }
+    return true;
+  });
 
   // useReducer untuk menghindari ESLint react-hooks-error tentang setState di dalam useEffect
   const [islandExpanded, dispatch] = useReducer((state, action) => {
@@ -43,10 +51,11 @@ const DeviceFrame = ({ children, islandMessage }) => {
     }
   }, [islandMessage]);
 
+  // Mode tanpa bingkai HP (untuk HP asli / PWA / layar kecil)
   if (!showMock) {
     return (
       <div className="min-h-screen bg-[#FAFAFA] text-black">
-        {/* Toggle back to Mockup */}
+        {/* Toggle back to Mockup (hanya di desktop) */}
         <div className="fixed bottom-6 right-6 z-50">
           <button
             onClick={() => setShowMock(true)}
