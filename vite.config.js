@@ -5,7 +5,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/to-do-list-HTML-JS/',
+  base: '/',
   plugins: [
     react(),
     tailwindcss(),
