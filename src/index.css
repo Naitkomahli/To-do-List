@@ -101,3 +101,25 @@ body {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
 }
+
+/* Tap highlight hilangkan di mobile */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Pastikan touch targets minimal 44px */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Smooth scrolling native */
+html {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Safe area bottom untuk iOS notch/home indicator */
+.safe-area-bottom {
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 8px);
+}

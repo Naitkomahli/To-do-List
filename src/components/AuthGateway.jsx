@@ -49,30 +49,30 @@ const AuthGateway = () => {
   };
 
   return (
-    <div className="flex-1 flex flex-col bg-white px-8 relative select-none">
+    <div className="flex-1 flex flex-col bg-white px-4 sm:px-8 relative select-none safe-pt">
       
       {/* App Logo & Welcome */}
-      <div className="flex-1 flex flex-col items-center justify-center -mt-12">
+      <div className="flex-1 flex flex-col items-center justify-center -mt-12 sm:-mt-16">
         {/* App Logo */}
-        <div className="w-[140px] h-[140px] rounded-[28px] flex items-center justify-center mb-6 transition-transform hover:scale-105 duration-300 overflow-hidden">
+        <div className="w-[120px] h-[120px] sm:w-[140px] sm:h-[140px] rounded-[24px] sm:rounded-[28px] flex items-center justify-center mb-5 sm:mb-6 transition-transform hover:scale-105 duration-300 overflow-hidden">
           <img src={logo} alt="Logo" className="w-full h-full object-contain" />
         </div>
         
         {/* Crisp Premium Typography */}
-        <h1 className="text-3xl font-bold tracking-tight text-neutral-900 font-sans">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 font-sans">
           Welcome to to-do
         </h1>
-        <p className="text-sm text-neutral-400 mt-2 text-center max-w-[240px]">
+        <p className="text-xs sm:text-sm text-neutral-400 mt-2 text-center max-w-[220px] sm:max-w-[240px]">
           Simplicity at its peak. Organise your workspace elegantly.
         </p>
       </div>
 
       {/* Action / Google Button */}
-      <div className="safe-pb pb-8 flex flex-col items-center">
+      <div className="safe-pb pb-6 sm:pb-8 flex flex-col items-center">
         <button
           onClick={handleGoogleLogin}
           disabled={isOpening}
-          className="w-full max-w-[280px] h-[52px] rounded-xl border border-neutral-200 bg-white hover:bg-neutral-50 transition-colors flex items-center justify-center gap-3 shadow-sm hover:shadow-md click-bounce duration-150 cursor-pointer disabled:opacity-60"
+          className="w-full max-w-[280px] h-[48px] sm:h-[52px] rounded-xl border border-neutral-200 bg-white hover:bg-neutral-50 transition-colors flex items-center justify-center gap-3 shadow-sm hover:shadow-md click-bounce duration-150 cursor-pointer disabled:opacity-60"
         >
           {isOpening ? (
             <div className="w-5 h-5 rounded-full border-[2px] border-neutral-200 border-t-neutral-800 animate-spin" />

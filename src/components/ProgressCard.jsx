@@ -12,18 +12,18 @@ const ProgressCard = () => {
   return (
     <div className="w-full bg-white rounded-3xl overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.02)] border border-neutral-100/60 select-none">
       {/* Header bar section (Light blue tint) */}
-      <div className="bg-[#E8F0FE]/70 px-6 py-2.5 border-b border-[#D2E3FC]/40">
+      <div className="bg-[#E8F0FE]/70 px-4 sm:px-6 py-2 sm:py-2.5 border-b border-[#D2E3FC]/40">
         <span className="text-[10px] font-bold text-accent tracking-widest uppercase">
           Progress Dashboard
         </span>
       </div>
 
       {/* Main Body */}
-      <div className="p-6 flex items-center justify-between gap-4">
+      <div className="p-4 sm:p-6 flex items-center justify-between gap-3 sm:gap-4">
         {/* Left Stats Text */}
-        <div className="flex flex-col">
-          <h2 className="text-xl font-bold tracking-tight text-neutral-800 leading-tight">
-            Welcome to <span className="text-neutral-900">{user?.name || 'guest'}</span> to-do!
+        <div className="flex flex-col min-w-0 flex-1">
+          <h2 className="text-base sm:text-xl font-bold tracking-tight text-neutral-800 leading-tight truncate">
+            Welcome{user?.name ? <span className="text-neutral-900"> {user.name}</span> : ' guest'}
           </h2>
           <span className="text-xs text-neutral-400 font-medium mt-2 flex items-center gap-1.5">
             <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />

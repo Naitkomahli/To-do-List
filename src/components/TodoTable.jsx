@@ -93,12 +93,12 @@ const TodoTable = ({ onCompleteAction }) => {
       {/* Single scrollable container — everything scrolls together */}
       <div className="flex-1 min-h-0 overflow-x-auto overflow-y-auto no-scrollbar">
         {/* w-max min-w-full: expands to fit content, but always fills container width */}
-        <div className="w-max min-w-full px-3">
+        <div className="w-max min-w-full px-1 sm:px-3">
 
           {/* ── Header Row ──────────────────────────────────────────────────── */}
-          <div className="flex items-center gap-3 mb-2 w-full">
-            <div className="w-32 shrink-0 overflow-hidden">
-              <h3 className="text-sm font-bold text-neutral-500 uppercase tracking-wider truncate">
+          <div className={`flex items-center gap-2 sm:gap-3 mb-2 w-full ${isWeekly ? 'pr-2 sm:pr-0' : ''}`}>
+            <div className={`shrink-0 overflow-hidden ${isWeekly ? 'w-24 sm:w-32' : 'flex-1'}`}>
+              <h3 className="text-xs sm:text-sm font-bold text-neutral-500 uppercase tracking-wider truncate">
                 To Do List
               </h3>
             </div>
@@ -106,23 +106,23 @@ const TodoTable = ({ onCompleteAction }) => {
             {isWeekly && DAYS_SHORT.map((day, i) => (
               <div
                 key={i}
-                className="w-10 shrink-0 flex items-center justify-center text-[9px] font-black text-neutral-400 uppercase"
+                className="w-8 sm:w-10 shrink-0 flex items-center justify-center text-[8px] sm:text-[9px] font-black text-neutral-400 uppercase"
               >
                 {day}
               </div>
             ))}
 
             {/* Spacer for delete column */}
-            <div className="w-8 shrink-0" />
+            {isWeekly && <div className="w-8 sm:w-8 shrink-0" />}
           </div>
 
           {/* ── Task Rows ───────────────────────────────────────────────────── */}
-          <div className="flex flex-col gap-1.5">
+          <div className="flex flex-col gap-1.5 sm:gap-1.5">
             {activeTasks.length === 0 ? (
               /* ── Empty State ── */
-              <div className="flex flex-col items-center justify-center py-12 px-6 text-center">
-                <div className="w-16 h-16 rounded-full bg-neutral-100 flex items-center justify-center mb-4">
-                  <Inbox className="w-6 h-6 text-neutral-300" />
+              <div className="flex flex-col items-center justify-center py-10 sm:py-12 px-6 text-center">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-neutral-100 flex items-center justify-center mb-4">
+                  <Inbox className="w-5 h-5 sm:w-6 sm:h-6 text-neutral-300" />
                 </div>
                 <h4 className="text-sm font-semibold text-neutral-400 mb-1">
                   No tasks yet
@@ -140,7 +140,7 @@ const TodoTable = ({ onCompleteAction }) => {
               return (
                 <div
                   key={task.id}
-                  className={`group flex items-center gap-3 py-2.5 px-3 bg-white border border-neutral-100 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md w-full ${
+                  className={`group flex items-center gap-2 sm:gap-3 py-2.5 sm:py-2.5 px-2 sm:px-3 bg-white border border-neutral-100 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md w-full min-h-[44px] ${
                     isTaskCompleted ? 'opacity-50' : ''
                   }`}
                 >
@@ -148,18 +148,18 @@ const TodoTable = ({ onCompleteAction }) => {
                   {!isWeekly && (
                     <button
                       onClick={() => handleToggleNormal(task)}
-                      className={`w-5 h-5 rounded-full shrink-0 flex items-center justify-center transition-all duration-300 focus:outline-none cursor-pointer ${
+                      className={`w-6 h-6 sm:w-5 sm:h-5 rounded-full shrink-0 flex items-center justify-center transition-all duration-300 focus:outline-none cursor-pointer ${
                         task.completed
                           ? 'bg-green-500 border border-green-500 text-white hover:scale-105'
                           : 'border border-neutral-300 hover:border-green-400'
                       }`}
                     >
-                      {task.completed && <Check className="w-3 h-3 stroke-[3.5]" />}
+                      {task.completed && <Check className="w-3.5 h-3.5 sm:w-3 sm:h-3 stroke-[3.5]" />}
                     </button>
                   )}
 
                   {/* Task Name */}
-                  <div className={`${isWeekly ? 'w-32' : 'flex-1'} shrink-0 overflow-hidden`}>
+                  <div className={`${isWeekly ? 'w-24 sm:w-32' : 'flex-1'} shrink-0 overflow-hidden`}>
                     {isEditing ? (
                       <input
                         type="text"
@@ -184,35 +184,35 @@ const TodoTable = ({ onCompleteAction }) => {
                     )}
                   </div>
 
-                  {/* Weekly 7-day circles */}
+                  {/* Weekly 7-day circles — lebih kecil di HP */}
                   {isWeekly && task.history && task.history.map((isDayChecked, dayIndex) => (
                     <button
                       key={dayIndex}
                       onClick={() => handleToggleWeekly(task, dayIndex)}
-                      className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-all duration-200 focus:outline-none cursor-pointer ${
+                      className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shrink-0 transition-all duration-200 focus:outline-none cursor-pointer ${
                         isDayChecked
                           ? 'bg-green-500 text-white scale-105 shadow-sm shadow-green-500/40'
                           : 'border border-neutral-200 bg-neutral-50 hover:border-green-400'
                       }`}
                     >
-                      {isDayChecked && <Check className="w-3 h-3 stroke-[4]" />}
+                      {isDayChecked && <Check className="w-3 h-3 sm:w-3 sm:h-3 stroke-[4]" />}
                     </button>
                   ))}
 
                   {/* Delete Button — visible on mobile, hover on desktop */}
                   <button
                     onClick={() => handleDeleteTask(task)}
-                    className="w-8 shrink-0 flex items-center justify-center p-1 text-neutral-300 hover:text-red-500 rounded-lg hover:bg-red-50/50 transition-colors opacity-50 md:opacity-0 md:group-hover:opacity-100 focus:opacity-100 cursor-pointer"
+                    className="w-8 shrink-0 flex items-center justify-center p-1 text-neutral-300 hover:text-red-500 rounded-lg hover:bg-red-50/50 transition-colors opacity-50 md:opacity-0 md:group-hover:opacity-100 focus:opacity-100 cursor-pointer min-h-[44px]"
                     title="Delete task"
                   >
-                    <Trash2 className="w-3.5 h-3.5" />
+                    <Trash2 className="w-3.5 h-3.5 sm:w-3.5 sm:h-3.5" />
                   </button>
                 </div>
               );
             }))}
 
             {isAdding ? (
-              <div className="flex items-center gap-3 py-2.5 px-3 bg-white border border-neutral-200 rounded-xl shadow-sm">
+              <div className="flex items-center gap-2 sm:gap-3 py-2.5 sm:py-2.5 px-2 sm:px-3 bg-white border border-neutral-200 rounded-xl shadow-sm min-h-[44px]">
                 <div className="w-5 h-5 rounded-full border border-neutral-200 shrink-0 bg-neutral-50" />
                 <input
                   ref={addInputRef}
@@ -228,7 +228,7 @@ const TodoTable = ({ onCompleteAction }) => {
             ) : (
               <button
                 onClick={handleStartAdd}
-                className="flex items-center gap-3 py-3.5 px-3 border border-dashed border-neutral-200 hover:border-accent bg-transparent group rounded-xl transition-all duration-200 cursor-pointer w-full text-left"
+                className="flex items-center gap-2 sm:gap-3 py-3.5 sm:py-3.5 px-2 sm:px-3 border border-dashed border-neutral-200 hover:border-accent bg-transparent group rounded-xl transition-all duration-200 cursor-pointer w-full text-left min-h-[44px]"
               >
                 <div className="w-5 h-5 rounded-full border border-neutral-300 group-hover:border-accent transition-colors flex items-center justify-center shrink-0">
                   <Plus className="w-3.5 h-3.5 text-neutral-400 group-hover:text-accent" />
