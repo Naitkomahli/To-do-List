@@ -1,4 +1,3 @@
-import SegmentedControl from './SegmentedControl';
 import ProgressCard from './ProgressCard';
 import TodoTable from './TodoTable';
 import ProfileDropdown from './ProfileDropdown';
@@ -23,10 +22,6 @@ const Dashboard = ({ onCompleteAction }) => {
           </div>
         </div>
 
-        {/* Segmented Control langsung di bawah header */}
-        <div className="px-4 sm:px-5 pb-3">
-          <SegmentedControl />
-        </div>
       </div>
 
       {/* Main Scrollable Content */}

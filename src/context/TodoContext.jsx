@@ -202,24 +202,24 @@ export const TodoProvider = ({ children }) => {
     );
   };
 
-  // 5. LOGIKA BARU: Kalkulasi Akumulasi Persentase & Jumlah Tugas untuk Dashboard secara Dinamis
-  const activeTasks = tasks.filter(t => t.timeframe === timeframe);
-  
-  let completedTasksCount;
-  let totalCalculatedTasks;
-  let remainingTasksCount;
+  // Backward compat: activeTasks = all tasks for legacy usage
+  const activeTasks = tasks;
 
-  if (timeframe === 'This Week') {
-    totalCalculatedTasks = activeTasks.length * 7;
-    completedTasksCount = activeTasks.reduce((acc, task) => {
-      return acc + (task.history ? task.history.filter(day => day).length : 0);
-    }, 0);
-    remainingTasksCount = totalCalculatedTasks - completedTasksCount;
-  } else {
-    totalCalculatedTasks = activeTasks.length;
-    completedTasksCount = activeTasks.filter(t => t.completed).length;
-    remainingTasksCount = activeTasks.filter(t => !t.completed).length;
-  }
+  // Separate today and weekly tasks
+  const todayTasks = tasks.filter(t => t.timeframe === 'Today');
+  const weeklyTasks = tasks.filter(t => t.timeframe === 'This Week');
+
+  // Combined stats for progress dashboard
+  const todayTotal = todayTasks.length;
+  const todayCompleted = todayTasks.filter(t => t.completed).length;
+  const weeklyTotal = weeklyTasks.length * 7;
+  const weeklyCompleted = weeklyTasks.reduce((acc, task) => {
+    return acc + (task.history ? task.history.filter(day => day).length : 0);
+  }, 0);
+
+  const totalCalculatedTasks = todayTotal + weeklyTotal;
+  const completedTasksCount = todayCompleted + weeklyCompleted;
+  const remainingTasksCount = totalCalculatedTasks - completedTasksCount;
   
   const completionPercentage = totalCalculatedTasks > 0
     ? Math.round((completedTasksCount / totalCalculatedTasks) * 100)
@@ -233,6 +233,8 @@ export const TodoProvider = ({ children }) => {
         tasks,
         categories,
         activeTasks,
+        todayTasks,
+        weeklyTasks,
         remainingTasksCount,
         completionPercentage,
         setTimeframe,
