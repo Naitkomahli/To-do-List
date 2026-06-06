@@ -218,7 +218,7 @@ const TodoTable = ({ onCompleteAction }) => {
                     To Do List
                   </h3>
                 </div>
-                <div className="flex items-center gap-3 shrink-0 ml-auto pr-1">
+                <div className="flex items-center gap-3 shrink-0 pr-1">
                   {DAYS_SHORT.map((day, i) => (
                     <div
                       key={i}
