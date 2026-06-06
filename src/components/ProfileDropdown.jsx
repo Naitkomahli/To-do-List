@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTodo } from '../context/TodoContext';
-import { LogOut, RefreshCw, Download } from 'lucide-react';
+import { LogOut, RefreshCw, Download, ChevronDown } from 'lucide-react';
 
 const ProfileDropdown = () => {
   const { user, logout } = useTodo();
@@ -9,7 +9,6 @@ const ProfileDropdown = () => {
   const [avatarError, setAvatarError] = useState(false);
   const dropdownRef = useRef(null);
 
-  // Close dropdown on click outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -20,7 +19,6 @@ const ProfileDropdown = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Capture PWA installation prompt
   useEffect(() => {
     const handleBeforeInstallPrompt = (e) => {
       e.preventDefault();
@@ -50,59 +48,52 @@ const ProfileDropdown = () => {
 
   return (
     <div className="relative" ref={dropdownRef}>
-      {/* Clickable Profile Avatar */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-9 h-9 rounded-full overflow-hidden border border-neutral-200/80 cursor-pointer click-bounce focus:outline-none flex items-center justify-center bg-neutral-100"
+        className="flex items-center gap-1 hover:bg-neutral-100/80 rounded-full pr-2 pl-0.5 py-0.5 transition-colors cursor-pointer focus:outline-none"
       >
-        {avatarError || !user.avatar ? (
-          <span className="text-xs font-bold text-neutral-500 select-none">
-            {getInitial(user.name)}
-          </span>
-        ) : (
-          <img
-            src={user.avatar}
-            alt={user.name}
-            className="w-full h-full object-cover"
-            onError={() => setAvatarError(true)}
-          />
-        )}
+        <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full overflow-hidden border border-neutral-200/80 bg-neutral-100">
+          {avatarError || !user.avatar ? (
+            <div className="w-full h-full flex items-center justify-center">
+              <span className="text-xs font-bold text-neutral-500">{getInitial(user.name)}</span>
+            </div>
+          ) : (
+            <img
+              src={user.avatar}
+              alt={user.name}
+              className="w-full h-full object-cover"
+              onError={() => setAvatarError(true)}
+            />
+          )}
+        </div>
+        <ChevronDown className="w-3 h-3 text-neutral-400" />
       </button>
 
-      {/* Sleek Profile Dropdown Card */}
       {isOpen && (
-        <div className="absolute right-0 top-11 w-64 bg-white/95 backdrop-blur-md rounded-2xl shadow-xl shadow-neutral-100 border border-neutral-100/60 p-4 z-50 animate-fade-in flex flex-col gap-3.5 origin-top-right">
-          {/* User Brief */}
+        <div className="absolute right-0 top-11 w-60 bg-white rounded-2xl shadow-xl shadow-neutral-100/50 border border-neutral-100 p-4 z-50 animate-fade-in flex flex-col gap-4 origin-top-right">
           <div className="flex items-center gap-3 pb-3 border-b border-neutral-100">
             {avatarError || !user.avatar ? (
-              <div className="w-11 h-11 rounded-full bg-accent/10 border border-neutral-100 flex items-center justify-center">
-                <span className="text-sm font-bold text-accent">
-                  {getInitial(user.name)}
-                </span>
+              <div className="w-10 h-10 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center">
+                <span className="text-sm font-bold text-accent">{getInitial(user.name)}</span>
               </div>
             ) : (
               <img
                 src={user.avatar}
                 alt={user.name}
-                className="w-11 h-11 rounded-full object-cover border border-neutral-100"
+                className="w-10 h-10 rounded-full object-cover border border-neutral-100"
                 onError={() => setAvatarError(true)}
               />
             )}
             <div className="flex-1 min-w-0">
-              <h4 className="text-xs font-semibold text-neutral-800 truncate">
-                {user.name}
-              </h4>
-              <p className="text-[10px] text-neutral-400 truncate">
-                {user.email}
-              </p>
+              <h4 className="text-xs font-semibold text-neutral-800 truncate">{user.name}</h4>
+              <p className="text-[10px] text-neutral-400 truncate">{user.email}</p>
             </div>
           </div>
 
-          {/* Action List */}
           <div className="flex flex-col gap-1">
             <button
               onClick={() => { logout(); setIsOpen(false); }}
-              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-neutral-600 hover:text-black hover:bg-neutral-50 transition-all text-xs font-medium cursor-pointer text-left"
+              className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-neutral-600 hover:text-black hover:bg-neutral-50 transition-all text-xs font-medium cursor-pointer text-left"
             >
               <RefreshCw className="w-4 h-4 stroke-[2]" />
               <span>Switch Account</span>
@@ -111,21 +102,17 @@ const ProfileDropdown = () => {
             {deferredPrompt && (
               <button
                 onClick={handleInstallClick}
-                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-accent hover:text-accent-dark hover:bg-accent-light/50 transition-all text-xs font-semibold cursor-pointer text-left animate-pulse"
+                className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-accent hover:bg-accent-light/30 transition-all text-xs font-semibold cursor-pointer text-left"
               >
                 <Download className="w-4 h-4 stroke-[2]" />
-                <span>Install Application</span>
+                <span>Install App</span>
               </button>
             )}
           </div>
 
-          {/* Sign Out Section */}
           <button
-            onClick={() => {
-              logout();
-              setIsOpen(false);
-            }}
-            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg bg-red-50/50 hover:bg-red-50 text-red-500 hover:text-red-600 transition-all text-xs font-semibold cursor-pointer text-left border border-red-100/20"
+            onClick={() => { logout(); setIsOpen(false); }}
+            className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-red-50/50 hover:bg-red-50 text-red-500 hover:text-red-600 transition-all text-xs font-semibold cursor-pointer text-left border border-red-100/30"
           >
             <LogOut className="w-4 h-4 stroke-[2]" />
             <span>Sign Out</span>

@@ -6,7 +6,6 @@ import AuthGateway from './components/AuthGateway';
 import Dashboard from './components/Dashboard';
 import './App.css';
 
-// Masukkan Client ID Google-mu di sini
 const GOOGLE_CLIENT_ID = '39701495136-5b3so34bksvdp8pjiljcmjk3apf0fp28.apps.googleusercontent.com';
 
 function MainAppContent() {
