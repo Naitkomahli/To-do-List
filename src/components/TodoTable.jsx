@@ -212,13 +212,13 @@ const TodoTable = ({ onCompleteAction }) => {
 
             <div className="min-w-[600px] sm:min-w-[680px]">
               {/* Header Row */}
-              <div className="flex items-center gap-3 mb-3 px-1">
+              <div className="flex items-center mb-3 px-3">
                 <div className="flex-1 min-w-0">
                   <h3 className="text-xs sm:text-sm font-bold text-neutral-400 uppercase tracking-widest">
                     To Do List
                   </h3>
                 </div>
-                <div className="flex items-center gap-3 shrink-0 pr-1">
+                <div className="flex items-center gap-3 shrink-0 ml-auto pr-1">
                   {DAYS_SHORT.map((day, i) => (
                     <div
                       key={i}
@@ -228,6 +228,8 @@ const TodoTable = ({ onCompleteAction }) => {
                     </div>
                   ))}
                 </div>
+                {/* Spacer to match delete button in task rows */}
+                <div className="w-8 shrink-0" />
               </div>
 
               {/* Task Rows */}
