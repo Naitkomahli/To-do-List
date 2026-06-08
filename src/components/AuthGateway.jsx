@@ -26,7 +26,7 @@ const AuthGateway = () => {
       {/* Centered content area - vertikal tengah sempurna */}
       <div className="flex-1 flex flex-col items-center justify-center px-6">
         {/* App Logo */}
-        <div className="w-[100px] h-[100px] sm:w-[120px] sm:h-[120px] rounded-[22px] sm:rounded-[26px] flex items-center justify-center mb-5 transition-transform hover:scale-105 duration-300 overflow-hidden shadow-lg shadow-neutral-100">
+        <div className="w-[150px] h-[150px] sm:w-[170px] sm:h-[170px] rounded-[22px] sm:rounded-[26px] flex items-center justify-center mb-5 transition-transform hover:scale-105 duration-300 overflow-hidden shadow-lg shadow-neutral-100">
           <img src={logo} alt="Logo" className="w-full h-full object-contain" />
         </div>
 
