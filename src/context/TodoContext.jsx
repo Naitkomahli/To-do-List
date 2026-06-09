@@ -15,6 +15,15 @@ import {
 
 const TodoContext = createContext();
 
+// ─── Helper untuk mendapatkan tanggal hari ini ───
+const getTodayDate = () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 export const TodoProvider = ({ children }) => {
   // ─── Auth state dari Firebase ───
   const [user, setUser] = useState(() => {
@@ -166,7 +175,7 @@ export const TodoProvider = ({ children }) => {
       createdAt: serverTimestamp(),
       ...(taskTimeframe === 'This Week'
         ? { history: [false, false, false, false, false, false, false] }
-        : { completed: false }
+        : { completed: false, date: getTodayDate() }
       )
     };
     await addDoc(collection(db, 'tasks'), newTask);
@@ -188,7 +197,8 @@ export const TodoProvider = ({ children }) => {
   }, []);
 
   // ─── Computed stats ───
-  const todayTasks = tasks.filter(t => t.timeframe === 'Today');
+  const todayDate = getTodayDate();
+  const todayTasks = tasks.filter(t => t.timeframe === 'Today' && (!t.date || t.date === todayDate));
   const weeklyTasks = tasks.filter(t => t.timeframe === 'This Week');
 
   const todayTotal = todayTasks.length;
