@@ -39,6 +39,7 @@ export const TodoProvider = ({ children }) => {
     return null;
   });
   const [authLoading, setAuthLoading] = useState(true);
+  const [tasks, setTasks] = useState([]);
 
   // ─── Firebase Auth listener ───
   useEffect(() => {
@@ -52,6 +53,7 @@ export const TodoProvider = ({ children }) => {
         });
       } else {
         setUser(null);
+        setTasks([]); // Reset tasks saat user logout
       }
       setAuthLoading(false);
     });
@@ -77,20 +79,9 @@ export const TodoProvider = ({ children }) => {
     localStorage.setItem('todo_timeframe', timeframe);
   }, [timeframe]);
 
-  // ─── Tasks state dari Firestore ───
-  const [tasks, setTasks] = useState([]);
-
-  // Reset tasks saat user logout
-  useEffect(() => {
-    if (!user && tasks.length > 0) {
-      setTasks([]);
-    }
-  }, [user, tasks.length]);
-
   // Real-time listener: ambil tasks milik user saat ini
   useEffect(() => {
     if (!user || !user.uid) return;
-
     const q = query(
       collection(db, 'tasks'),
       where('uid', '==', user.uid)
