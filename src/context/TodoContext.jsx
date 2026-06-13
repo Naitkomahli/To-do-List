@@ -40,6 +40,27 @@ export const TodoProvider = ({ children }) => {
   });
   const [authLoading, setAuthLoading] = useState(true);
   const [tasks, setTasks] = useState([]);
+  const [todayDate, setTodayDate] = useState(getTodayDate());
+
+  // ─── Detect pergantian hari (cek tiap menit) ───
+  useEffect(() => {
+    const checkDate = () => {
+      const newDate = getTodayDate();
+      setTodayDate(prev => (prev !== newDate ? newDate : prev));
+    };
+    const interval = setInterval(checkDate, 60 * 1000);
+    // Juga cek saat tab kembali fokus (kalau laptop sleep semalaman)
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') checkDate();
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+    window.addEventListener('focus', checkDate);
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', onVisibility);
+      window.removeEventListener('focus', checkDate);
+    };
+  }, []);
 
   // ─── Firebase Auth listener ───
   useEffect(() => {
@@ -58,7 +79,6 @@ export const TodoProvider = ({ children }) => {
       setAuthLoading(false);
     });
     return unsubscribe;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ─── Simpan user ke localStorage untuk quick load ───
@@ -105,6 +125,24 @@ export const TodoProvider = ({ children }) => {
 
     return unsubscribe;
   }, [user]);
+
+  // ─── Auto-reset daily task ketika hari berganti ───
+  // Task dengan timeframe 'Today' yang date-nya bukan hari ini akan di-reset
+  // (completed = false, date = hari ini) sehingga berperilaku sebagai recurring daily task.
+  useEffect(() => {
+    if (!user || !user.uid || tasks.length === 0) return;
+    tasks.forEach((task) => {
+      if (
+        task.timeframe === 'Today' &&
+        task.date !== todayDate
+      ) {
+        updateDoc(doc(db, 'tasks', task.id), {
+          completed: false,
+          date: todayDate
+        }).catch((err) => console.error('Failed to reset daily task:', err));
+      }
+    });
+  }, [tasks, todayDate, user]);
 
   // ─── Categories ───
   const [categories] = useState([
@@ -188,8 +226,8 @@ export const TodoProvider = ({ children }) => {
   }, []);
 
   // ─── Computed stats ───
-  const todayDate = getTodayDate();
-  const todayTasks = tasks.filter(t => t.timeframe === 'Today' && (!t.date || t.date === todayDate));
+  // Tampilkan semua task 'Today' sebagai daily recurring (status reset otomatis oleh effect di atas)
+  const todayTasks = tasks.filter(t => t.timeframe === 'Today');
   const weeklyTasks = tasks.filter(t => t.timeframe === 'This Week');
 
   const todayTotal = todayTasks.length;
