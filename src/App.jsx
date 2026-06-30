@@ -17,9 +17,9 @@ function MainAppContent() {
   if (authLoading) {
     return (
       <DeviceFrame>
-        <div className="flex-1 flex items-center justify-center bg-white">
-          <div className="flex flex-col items-center gap-4">
-            <div className="w-8 h-8 rounded-full border-[3px] border-neutral-200 border-t-neutral-800 animate-spin" />
+          <div className="flex-1 flex items-center justify-center bg-surface">
+            <div className="flex flex-col items-center gap-4">
+              <div className="w-8 h-8 rounded-full border-[3px] border-slate-200 border-t-accent animate-spin" />
             <p className="text-sm text-neutral-400 font-medium">Loading...</p>
           </div>
         </div>

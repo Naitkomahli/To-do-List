@@ -24,6 +24,18 @@ const getTodayDate = () => {
   return `${year}-${month}-${day}`;
 };
 
+// ─── Helper untuk mendapatkan hari Monday minggu ini ───
+const getMonday = (date) => {
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+  d.setDate(diff);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const dayStr = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${dayStr}`;
+};
+
 export const TodoProvider = ({ children }) => {
   // ─── Auth state dari Firebase ───
   const [user, setUser] = useState(() => {
@@ -41,6 +53,9 @@ export const TodoProvider = ({ children }) => {
   const [authLoading, setAuthLoading] = useState(true);
   const [tasks, setTasks] = useState([]);
   const [todayDate, setTodayDate] = useState(getTodayDate());
+  const [currentWeek, setCurrentWeek] = useState(() => {
+    return localStorage.getItem('todo_currentWeek') || getMonday(new Date());
+  });
 
   // ─── Detect pergantian hari (cek tiap menit) ───
   useEffect(() => {
@@ -61,6 +76,16 @@ export const TodoProvider = ({ children }) => {
       window.removeEventListener('focus', checkDate);
     };
   }, []);
+
+  // ─── Update currentWeek saat hari berganti ───
+  useEffect(() => {
+    const monday = getMonday(new Date());
+    setCurrentWeek(prev => (prev !== monday ? monday : prev));
+  }, [todayDate]);
+
+  useEffect(() => {
+    localStorage.setItem('todo_currentWeek', currentWeek);
+  }, [currentWeek]);
 
   // ─── Firebase Auth listener ───
   useEffect(() => {
@@ -89,6 +114,15 @@ export const TodoProvider = ({ children }) => {
       localStorage.removeItem('todo_user');
     }
   }, [user]);
+
+  // ─── Tab View state ───
+  const [tabView, setTabView] = useState(() => {
+    return localStorage.getItem('todo_tabView') || 'To-Do List';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('todo_tabView', tabView);
+  }, [tabView]);
 
   // ─── Timeframe state (lokal — preferensi UI) ───
   const [timeframe, setTimeframe] = useState(() => {
@@ -143,6 +177,21 @@ export const TodoProvider = ({ children }) => {
       }
     });
   }, [tasks, todayDate, user]);
+
+  // ─── Auto-reset weekly history ketika minggu berganti ───
+  useEffect(() => {
+    if (!user || !user.uid || tasks.length === 0) return;
+    const monday = getMonday(new Date());
+    if (monday !== currentWeek) {
+      tasks.forEach((task) => {
+        if (task.timeframe === 'This Week' && task.history?.some(Boolean)) {
+          updateDoc(doc(db, 'tasks', task.id), {
+            history: [false, false, false, false, false, false, false]
+          }).catch((err) => console.error('Failed to reset weekly task:', err));
+        }
+      });
+    }
+  }, [tasks, currentWeek, user]);
 
   // ─── Categories ───
   const [categories] = useState([
@@ -237,6 +286,8 @@ export const TodoProvider = ({ children }) => {
     return acc + (task.history ? task.history.filter(day => day).length : 0);
   }, 0);
 
+  const todayRemaining = todayTotal - todayCompleted;
+  const weeklyRemaining = weeklyTotal - weeklyCompleted;
   const totalCalculatedTasks = todayTotal + weeklyTotal;
   const completedTasksCount = todayCompleted + weeklyCompleted;
   const remainingTasksCount = totalCalculatedTasks - completedTasksCount;
@@ -253,6 +304,7 @@ export const TodoProvider = ({ children }) => {
   const value = {
     user,
     authLoading,
+    tabView,
     timeframe,
     tasks,
     categories,
@@ -266,6 +318,9 @@ export const TodoProvider = ({ children }) => {
     weeklyCompleted,
     todayTotal,
     weeklyTotal,
+    todayRemaining,
+    weeklyRemaining,
+    setTabView,
     setTimeframe,
     loginWithGoogle,
     logout,
