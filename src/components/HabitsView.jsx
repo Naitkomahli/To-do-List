@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { useTodo } from '../context/TodoContext';
-import { Check, Plus, Trash2, Inbox, Flame, CalendarDays } from 'lucide-react';
+import { Check, Plus, Trash2, Flame, CalendarDays } from 'lucide-react';
 
 const DAYS_SHORT = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
 const DAYS_LONG = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];

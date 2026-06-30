@@ -53,9 +53,6 @@ export const TodoProvider = ({ children }) => {
   const [authLoading, setAuthLoading] = useState(true);
   const [tasks, setTasks] = useState([]);
   const [todayDate, setTodayDate] = useState(getTodayDate());
-  const [currentWeek, setCurrentWeek] = useState(() => {
-    return localStorage.getItem('todo_currentWeek') || getMonday(new Date());
-  });
 
   // ─── Detect pergantian hari (cek tiap menit) ───
   useEffect(() => {
@@ -76,16 +73,6 @@ export const TodoProvider = ({ children }) => {
       window.removeEventListener('focus', checkDate);
     };
   }, []);
-
-  // ─── Update currentWeek saat hari berganti ───
-  useEffect(() => {
-    const monday = getMonday(new Date());
-    setCurrentWeek(prev => (prev !== monday ? monday : prev));
-  }, [todayDate]);
-
-  useEffect(() => {
-    localStorage.setItem('todo_currentWeek', currentWeek);
-  }, [currentWeek]);
 
   // ─── Firebase Auth listener ───
   useEffect(() => {
@@ -182,7 +169,9 @@ export const TodoProvider = ({ children }) => {
   useEffect(() => {
     if (!user || !user.uid || tasks.length === 0) return;
     const monday = getMonday(new Date());
-    if (monday !== currentWeek) {
+    const lastWeek = localStorage.getItem('todo_lastWeek') || '';
+    if (monday !== lastWeek) {
+      localStorage.setItem('todo_lastWeek', monday);
       tasks.forEach((task) => {
         if (task.timeframe === 'This Week' && task.history?.some(Boolean)) {
           updateDoc(doc(db, 'tasks', task.id), {
@@ -191,7 +180,7 @@ export const TodoProvider = ({ children }) => {
         }
       });
     }
-  }, [tasks, currentWeek, user]);
+  }, [tasks, todayDate, user]);
 
   // ─── Categories ───
   const [categories] = useState([
