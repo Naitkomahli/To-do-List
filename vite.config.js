@@ -11,7 +11,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['logo.png'],
+      includeAssets: ['logo.png', 'pwa-icon.svg'],
       manifest: {
         name: 'To-Do Minimalist Workspace',
         short_name: 'To-Do',
@@ -20,18 +20,13 @@ export default defineConfig({
         background_color: '#FCF9F2',
         display: 'standalone',
         orientation: 'portrait',
-        start_url: '/',
+        start_url: '/To-do-List/',
+        scope: '/To-do-List/',
         icons: [
           {
-            src: '/logo.png',
+            src: './pwa-icon.svg',
             sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any maskable'
-          },
-          {
-            src: '/logo.png',
-            sizes: '192x192',
-            type: 'image/png',
+            type: 'image/svg+xml',
             purpose: 'any maskable'
           }
         ]
