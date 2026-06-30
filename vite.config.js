@@ -5,7 +5,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/To-do-List/',
+  base: process.env.VERCEL ? '/' : '/To-do-List/',
   plugins: [
     react(),
     tailwindcss(),
