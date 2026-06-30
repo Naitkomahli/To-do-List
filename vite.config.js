@@ -5,7 +5,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/',
+  base: '/To-do-List/',
   plugins: [
     react(),
     tailwindcss(),
@@ -16,8 +16,8 @@ export default defineConfig({
         name: 'To-Do Minimalist Workspace',
         short_name: 'To-Do',
         description: 'Simplicity at its peak. Organise your workspace elegantly.',
-        theme_color: '#FAFAFA',
-        background_color: '#FAFAFA',
+        theme_color: '#FCF9F2',
+        background_color: '#FCF9F2',
         display: 'standalone',
         orientation: 'portrait',
         start_url: '/',
