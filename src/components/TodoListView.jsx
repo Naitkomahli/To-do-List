@@ -77,7 +77,8 @@ const TodoListView = ({ onCompleteAction }) => {
     setTimeout(() => addInputRef.current?.focus(), 50);
   };
 
-  const handleSaveNew = () => {
+  const handleSaveNew = (e) => {
+    e.preventDefault();
     if (newText.trim()) {
       addTask(newText.trim(), 'Category', 'Today');
       onCompleteAction(`Created task "${newText.trim()}"`);
@@ -87,7 +88,6 @@ const TodoListView = ({ onCompleteAction }) => {
   };
 
   const handleKeyNew = (e) => {
-    if (e.key === 'Enter') handleSaveNew();
     if (e.key === 'Escape') { setIsAdding(false); setNewText(''); }
   };
 
@@ -167,15 +167,17 @@ const TodoListView = ({ onCompleteAction }) => {
 
                 <div className="flex-1 min-w-0 overflow-hidden">
                   {isEditing ? (
+                    <form onSubmit={(e) => { e.preventDefault(); handleSaveEdit(task.id); }} className="contents">
                     <input
                       type="text"
                       value={editText}
                       onChange={(e) => setEditText(e.target.value)}
-                      onBlur={() => handleSaveEdit(task.id)}
+                      onBlur={() => { if (editText.trim()) updateTaskText(task.id, editText.trim()); else deleteTask(task.id); setEditingTaskId(null); }}
                       onKeyDown={(e) => handleKeyEdit(e, task.id)}
                       autoFocus
                       className="w-full bg-white border border-stone-200 rounded-lg px-2.5 py-1.5 text-sm font-medium text-stone-800 outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/15"
                     />
+                    </form>
                   ) : (
                     <div className="flex items-center gap-2 flex-wrap">
                       <span
@@ -213,6 +215,7 @@ const TodoListView = ({ onCompleteAction }) => {
         )}
 
         {isAdding ? (
+          <form onSubmit={handleSaveNew} className="contents">
           <div className="flex items-center gap-3 py-2.5 px-3.5 bg-white border border-amber-300/50 rounded-xl shadow-card min-h-[48px]">
             <div className="w-6 h-6 rounded-full border-2 border-stone-200 shrink-0" />
             <input
@@ -221,11 +224,12 @@ const TodoListView = ({ onCompleteAction }) => {
               value={newText}
               placeholder="Ketik dan tekan enter..."
               onChange={(e) => setNewText(e.target.value)}
-              onBlur={handleSaveNew}
+              onBlur={() => { setIsAdding(false); setNewText(''); }}
               onKeyDown={handleKeyNew}
               className="flex-1 bg-transparent text-[14px] font-medium text-stone-800 outline-none placeholder-stone-400"
             />
           </div>
+          </form>
         ) : (
           <button
             onClick={handleStartAdd}

@@ -97,7 +97,8 @@ const TodoTable = ({ onCompleteAction }) => {
     setTimeout(() => addInputRef.current?.focus(), 50);
   };
 
-  const handleSaveNew = (type) => {
+  const handleSaveNew = (type, e) => {
+    if (e) e.preventDefault();
     if (newText.trim()) {
       addTask(newText.trim(), 'Category', type === 'week' ? 'This Week' : 'Today');
       onCompleteAction(`Created task "${newText.trim()}"`);
@@ -107,7 +108,6 @@ const TodoTable = ({ onCompleteAction }) => {
   };
 
   const handleKeyPressNew = (e, type) => {
-    if (e.key === 'Enter') handleSaveNew(type);
     if (e.key === 'Escape') {
       setActiveSection(null);
       setNewText('');
@@ -126,7 +126,6 @@ const TodoTable = ({ onCompleteAction }) => {
   };
 
   const handleKeyPressEdit = (e, id) => {
-    if (e.key === 'Enter') handleSaveEdit(id);
     if (e.key === 'Escape') setEditingTaskId(null);
   };
 
@@ -200,15 +199,17 @@ const TodoTable = ({ onCompleteAction }) => {
 
                     <div className="flex-1 min-w-0 overflow-hidden">
                       {isEditing ? (
+                        <form onSubmit={(e) => { e.preventDefault(); handleSaveEdit(task.id); }} className="contents">
                         <input
                           type="text"
                           value={editText}
                           onChange={(e) => setEditText(e.target.value)}
-                          onBlur={() => handleSaveEdit(task.id)}
+                          onBlur={() => { if (editText.trim()) updateTaskText(task.id, editText.trim()); else deleteTask(task.id); setEditingTaskId(null); }}
                           onKeyDown={(e) => handleKeyPressEdit(e, task.id)}
                           autoFocus
                           className="w-full bg-white border border-neutral-200 rounded-lg px-2.5 py-1.5 text-sm sm:text-base font-semibold text-neutral-900 focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
                         />
+                        </form>
                       ) : (
                         <div className="flex items-center gap-2 flex-wrap">
                           <span
@@ -251,6 +252,7 @@ const TodoTable = ({ onCompleteAction }) => {
             )}
 
             {activeSection === 'today' ? (
+              <form onSubmit={(e) => handleSaveNew('today', e)} className="contents">
               <div className="flex items-center gap-3 py-2.5 px-3.5 bg-white border border-amber-300 rounded-xl shadow-card min-h-[48px]">
                 <div className="w-6 h-6 rounded-full border-2 border-neutral-200 shrink-0 bg-neutral-50" />
                 <input
@@ -259,11 +261,12 @@ const TodoTable = ({ onCompleteAction }) => {
                   value={newText}
                   placeholder="Ketik dan tekan enter..."
                   onChange={(e) => setNewText(e.target.value)}
-                  onBlur={() => handleSaveNew('today')}
+                  onBlur={() => { setActiveSection(null); setNewText(''); }}
                   onKeyDown={(e) => handleKeyPressNew(e, 'today')}
                   className="flex-1 bg-transparent text-sm sm:text-base font-semibold text-neutral-900 focus:outline-none placeholder-neutral-400"
                 />
               </div>
+              </form>
             ) : (
               <button
                 onClick={() => handleStartAdd('today')}
@@ -350,16 +353,17 @@ const TodoTable = ({ onCompleteAction }) => {
                       {/* Task Name */}
                       <div className="flex-1 min-w-0 overflow-hidden">
                         {isEditing ? (
+                          <form onSubmit={(e) => { e.preventDefault(); handleSaveEdit(task.id); }} className="contents">
                           <input
                             type="text"
                             value={editText}
                             onChange={(e) => setEditText(e.target.value)}
-                            onBlur={() => handleSaveEdit(task.id)}
+                            onBlur={() => { if (editText.trim()) updateTaskText(task.id, editText.trim()); else deleteTask(task.id); setEditingTaskId(null); }}
                             onKeyDown={(e) => handleKeyPressEdit(e, task.id)}
                             autoFocus
                             className="w-full bg-white border border-neutral-200 rounded-lg px-2.5 py-1.5 text-sm sm:text-base font-semibold text-neutral-900 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
                           />
-                        ) : (
+                          </form>
                           <div className="flex items-center gap-2 flex-wrap">
                             <span
                               onClick={() => handleStartEdit(task)}
@@ -422,6 +426,7 @@ const TodoTable = ({ onCompleteAction }) => {
 
               {/* Add Task for Weekly */}
               {activeSection === 'week' ? (
+                <form onSubmit={(e) => handleSaveNew('week', e)} className="contents">
                 <div className="flex items-center gap-3 py-2.5 px-3.5 bg-white border border-violet-300 rounded-xl shadow-card min-h-[48px]">
                   <input
                     ref={addInputRef}
@@ -429,11 +434,12 @@ const TodoTable = ({ onCompleteAction }) => {
                     value={newText}
                     placeholder="Ketik dan tekan enter..."
                     onChange={(e) => setNewText(e.target.value)}
-                    onBlur={() => handleSaveNew('week')}
+                    onBlur={() => { setActiveSection(null); setNewText(''); }}
                     onKeyDown={(e) => handleKeyPressNew(e, 'week')}
                     className="flex-1 bg-transparent text-sm sm:text-base font-semibold text-neutral-900 focus:outline-none placeholder-neutral-400"
                   />
                 </div>
+                </form>
               ) : (
                 <button
                   onClick={() => handleStartAdd('week')}

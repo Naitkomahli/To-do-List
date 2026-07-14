@@ -132,7 +132,8 @@ const HabitsView = ({ onCompleteAction }) => {
     setTimeout(() => addInputRef.current?.focus(), 50);
   };
 
-  const handleSaveNew = () => {
+  const handleSaveNew = (e) => {
+    e.preventDefault();
     if (newText.trim()) {
       addTask(newText.trim(), 'Category', 'This Week');
       onCompleteAction(`Created habit "${newText.trim()}"`);
@@ -142,7 +143,6 @@ const HabitsView = ({ onCompleteAction }) => {
   };
 
   const handleKeyNew = (e) => {
-    if (e.key === 'Enter') handleSaveNew();
     if (e.key === 'Escape') { setIsAdding(false); setNewText(''); }
   };
 
@@ -206,7 +206,7 @@ const HabitsView = ({ onCompleteAction }) => {
       )}
 
       <div className="flex-1 min-h-0 overflow-y-auto no-scrollbar pb-2">
-        <div className="flex items-center gap-2 mb-3 px-3.5">
+        <div className="hidden sm:flex items-center gap-2 mb-3 px-3.5">
           <div className="flex-1 min-w-0" />
           {DAYS_SHORT.map((day, i) => {
             const dayDate = new Date(startOfWeek);
@@ -240,23 +240,26 @@ const HabitsView = ({ onCompleteAction }) => {
               return (
                 <div
                   key={task.id}
-                  className={`flex items-center gap-2 py-2.5 px-3.5 bg-white border border-stone-100 rounded-xl transition-all duration-200 shadow-card hover:shadow-card-hover hover:border-stone-200 min-h-[48px] ${
+                  className={`py-2.5 px-3.5 bg-white border border-stone-100 rounded-xl transition-all duration-200 shadow-card hover:shadow-card-hover hover:border-stone-200 min-h-[48px] ${
                     isAllDone ? 'opacity-40' : ''
                   }`}
                 >
-                  <div className="flex-1 min-w-0 overflow-hidden">
-                    {isEditing ? (
-                      <input
-                        type="text"
-                        value={editText}
-                        onChange={(e) => setEditText(e.target.value)}
-                        onBlur={() => handleSaveEdit(task.id)}
-                        onKeyDown={(e) => handleKeyEdit(e, task.id)}
-                        autoFocus
-                        className="w-full bg-white border border-stone-200 rounded-lg px-2.5 py-1.5 text-sm font-medium text-stone-800 outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/15"
-                      />
-                    ) : (
-                      <div className="flex items-center gap-2">
+                  {isEditing ? (
+                    <form onSubmit={(e) => { e.preventDefault(); handleSaveEdit(task.id); }} className="contents">
+                    <input
+                      type="text"
+                      value={editText}
+                      onChange={(e) => setEditText(e.target.value)}
+                      onBlur={() => { if (editText.trim()) updateTaskText(task.id, editText.trim()); else deleteTask(task.id); setEditingTaskId(null); }}
+                      onKeyDown={(e) => handleKeyEdit(e, task.id)}
+                      autoFocus
+                      className="w-full bg-white border border-stone-200 rounded-lg px-2.5 py-1.5 text-sm font-medium text-stone-800 outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/15"
+                    />
+                    </form>
+                  ) : (
+                    <>
+                      {/* Desktop: single row with everything inline */}
+                      <div className="hidden sm:flex items-center gap-2">
                         {task.history && (
                           <div className="w-1 h-7 rounded-full shrink-0 overflow-hidden bg-stone-100">
                             <div
@@ -277,47 +280,107 @@ const HabitsView = ({ onCompleteAction }) => {
                         >
                           {task.text}
                         </span>
+                        <div className="flex-1" />
+                        {task.history && (
+                          <div className="flex items-center gap-2 shrink-0">
+                            {task.history.map((checked, dayIndex) => {
+                              const dayDate = new Date(startOfWeek);
+                              dayDate.setDate(startOfWeek.getDate() + dayIndex);
+                              const isToday = dayDate.toDateString() === today.toDateString();
+                              return (
+                                <button
+                                  key={dayIndex}
+                                  onClick={() => handleToggle(task, dayIndex)}
+                                  className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shrink-0 transition-all duration-200 ${
+                                    checked
+                                      ? 'bg-success text-white shadow-glow-amber'
+                                      : isToday
+                                        ? 'border-2 border-amber-300 bg-amber-50 hover:border-success hover:bg-success-light'
+                                        : 'border-2 border-stone-200 bg-white hover:border-success hover:bg-success-light'
+                                  }`}
+                                >
+                                  {checked && <Check className="w-4 h-4 stroke-[3.5] check-pop" />}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        )}
+                        <button
+                          onClick={() => handleDelete(task)}
+                          className="w-7 h-7 shrink-0 flex items-center justify-center text-stone-300 hover:text-danger rounded-lg hover:bg-danger-light transition-all duration-200"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
                       </div>
-                    )}
-                  </div>
 
-                  {task.history && (
-                    <div className="flex items-center gap-2 shrink-0">
-                      {task.history.map((checked, dayIndex) => {
-                        const dayDate = new Date(startOfWeek);
-                        dayDate.setDate(startOfWeek.getDate() + dayIndex);
-                        const isToday = dayDate.toDateString() === today.toDateString();
-                        return (
-                          <button
-                            key={dayIndex}
-                            onClick={() => handleToggle(task, dayIndex)}
-                            className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shrink-0 transition-all duration-200 ${
-                              checked
-                                ? 'bg-success text-white shadow-glow-amber'
-                                : isToday
-                                  ? 'border-2 border-amber-300 bg-amber-50 hover:border-success hover:bg-success-light'
-                                  : 'border-2 border-stone-200 bg-white hover:border-success hover:bg-success-light'
+                      {/* Mobile: stacked layout */}
+                      <div className="sm:hidden">
+                        <div className="flex items-center gap-2 mb-2">
+                          {task.history && (
+                            <div className="w-1 h-7 rounded-full shrink-0 overflow-hidden bg-stone-100">
+                              <div
+                                className="w-full bg-gradient-to-b from-amber-500 to-orange-500 rounded-full transition-all duration-500"
+                                style={{
+                                  height: `${Math.round((task.history.filter(Boolean).length / 7) * 100)}%`,
+                                }}
+                              />
+                            </div>
+                          )}
+                          <span
+                            onClick={() => handleEdit(task)}
+                            className={`block text-[14px] font-semibold tracking-wide truncate todo-strikethrough flex-1 min-w-0 ${
+                              isAllDone
+                                ? 'completed text-stone-400'
+                                : 'text-stone-700'
                             }`}
                           >
-                            {checked && <Check className="w-4 h-4 stroke-[3.5] check-pop" />}
+                            {task.text}
+                          </span>
+                          <button
+                            onClick={() => handleDelete(task)}
+                            className="w-7 h-7 shrink-0 flex items-center justify-center text-stone-300 hover:text-danger rounded-lg hover:bg-danger-light transition-all duration-200"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
                           </button>
-                        );
-                      })}
-                    </div>
+                        </div>
+                        {task.history && (
+                          <div className="flex items-center gap-2 justify-between px-1">
+                            {task.history.map((checked, dayIndex) => {
+                              const dayDate = new Date(startOfWeek);
+                              dayDate.setDate(startOfWeek.getDate() + dayIndex);
+                              const isToday = dayDate.toDateString() === today.toDateString();
+                              const dayName = DAYS_SHORT[dayIndex];
+                              return (
+                                <button
+                                  key={dayIndex}
+                                  onClick={() => handleToggle(task, dayIndex)}
+                                  className="flex flex-col items-center gap-0.5"
+                                >
+                                  <span className="text-[8px] font-semibold text-stone-400 uppercase">{dayName}</span>
+                                  <div className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 ${
+                                    checked
+                                      ? 'bg-success text-white shadow-glow-amber'
+                                      : isToday
+                                        ? 'border-2 border-amber-300 bg-amber-50'
+                                        : 'border-2 border-stone-200 bg-white'
+                                  }`}>
+                                    {checked && <Check className="w-3.5 h-3.5 stroke-[3.5]" />}
+                                  </div>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    </>
                   )}
-
-                  <button
-                    onClick={() => handleDelete(task)}
-                    className="w-7 h-7 shrink-0 flex items-center justify-center text-stone-300 hover:text-danger rounded-lg hover:bg-danger-light transition-all duration-200"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
                 </div>
               );
             })
           )}
 
           {isAdding ? (
+            <form onSubmit={handleSaveNew} className="contents">
             <div className="flex items-center gap-2 py-2.5 px-3.5 bg-white border border-amber-300/50 rounded-xl shadow-card min-h-[48px]">
               <input
                 ref={addInputRef}
@@ -325,11 +388,12 @@ const HabitsView = ({ onCompleteAction }) => {
                 value={newText}
                 placeholder="Nama habit..."
                 onChange={(e) => setNewText(e.target.value)}
-                onBlur={handleSaveNew}
+                onBlur={() => { setIsAdding(false); setNewText(''); }}
                 onKeyDown={handleKeyNew}
                 className="flex-1 bg-transparent text-[14px] font-medium text-stone-800 outline-none placeholder-stone-400"
               />
             </div>
+            </form>
           ) : (
             <button
               onClick={handleStartAdd}

@@ -9,14 +9,20 @@ import ProfileDropdown from './ProfileDropdown';
 const Dashboard = ({ onCompleteAction }) => {
   const { tabView, setTabView } = useTodo();
   const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
 
   const handleTouchStart = (e) => {
     touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
   };
 
   const handleTouchEnd = (e) => {
     const deltaX = e.changedTouches[0].clientX - touchStartX.current;
+    const deltaY = e.changedTouches[0].clientY - touchStartY.current;
     const threshold = 50;
+
+    // Only trigger tab switch if swipe is predominantly horizontal
+    if (Math.abs(deltaX) < Math.abs(deltaY)) return;
 
     if (deltaX < -threshold && tabView === 'To-Do List') {
       setTabView('Habits');

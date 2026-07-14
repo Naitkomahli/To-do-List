@@ -222,12 +222,16 @@ export const TodoProvider = ({ children }) => {
     const task = tasks.find(t => t.id === id);
     if (!task) return;
 
-    if (task.timeframe === 'This Week' && dayIndex !== null) {
-      const newHistory = [...(task.history || [false, false, false, false, false, false, false])];
-      newHistory[dayIndex] = !newHistory[dayIndex];
-      await updateDoc(taskRef, { history: newHistory });
-    } else {
-      await updateDoc(taskRef, { completed: !task.completed });
+    try {
+      if (task.timeframe === 'This Week' && dayIndex !== null) {
+        const newHistory = [...(task.history || [false, false, false, false, false, false, false])];
+        newHistory[dayIndex] = !newHistory[dayIndex];
+        await updateDoc(taskRef, { history: newHistory });
+      } else {
+        await updateDoc(taskRef, { completed: !task.completed });
+      }
+    } catch (error) {
+      console.error('Failed to toggle task:', error);
     }
   }, [tasks]);
 
@@ -245,22 +249,38 @@ export const TodoProvider = ({ children }) => {
         : { completed: false, date: getTodayDate() }
       )
     };
-    await addDoc(collection(db, 'tasks'), newTask);
+    try {
+      await addDoc(collection(db, 'tasks'), newTask);
+    } catch (error) {
+      console.error('Failed to add task:', error);
+    }
   }, [user, timeframe]);
 
   // ─── Delete Task ───
   const deleteTask = useCallback(async (id) => {
-    await deleteDoc(doc(db, 'tasks', id));
+    try {
+      await deleteDoc(doc(db, 'tasks', id));
+    } catch (error) {
+      console.error('Failed to delete task:', error);
+    }
   }, []);
 
   // ─── Update Task Text ───
   const updateTaskText = useCallback(async (id, newText) => {
-    await updateDoc(doc(db, 'tasks', id), { text: newText });
+    try {
+      await updateDoc(doc(db, 'tasks', id), { text: newText });
+    } catch (error) {
+      console.error('Failed to update task text:', error);
+    }
   }, []);
 
   // ─── Update Task Category ───
   const updateTaskCategory = useCallback(async (id, newCategory) => {
-    await updateDoc(doc(db, 'tasks', id), { category: newCategory });
+    try {
+      await updateDoc(doc(db, 'tasks', id), { category: newCategory });
+    } catch (error) {
+      console.error('Failed to update task category:', error);
+    }
   }, []);
 
   // ─── Computed stats ───
