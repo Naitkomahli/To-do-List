@@ -22,27 +22,31 @@ const AuthGateway = () => {
   };
 
   return (
-    <div className="flex-1 flex flex-col bg-terra select-none min-h-[80vh]">
-      <div className="flex-1 flex flex-col items-center justify-center px-6">
-        <div className="w-[120px] h-[120px] sm:w-[140px] sm:h-[140px] rounded-[20px] flex items-center justify-center mb-6 overflow-hidden shadow-card border border-stone-100">
+    <div className="relative flex-1 flex flex-col bg-terra select-none min-h-[80vh] overflow-hidden">
+      {/* Blob gradasi dekoratif */}
+      <div className="absolute -top-24 -right-20 w-64 h-64 rounded-full bg-gradient-to-br from-amber-200/50 to-orange-200/40 blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-28 -left-24 w-72 h-72 rounded-full bg-gradient-to-tr from-orange-100/60 to-amber-100/50 blur-3xl pointer-events-none animate-float" />
+
+      <div className="relative flex-1 flex flex-col items-center justify-center px-6">
+        <div className="w-[120px] h-[120px] sm:w-[140px] sm:h-[140px] rounded-[22px] flex items-center justify-center mb-7 overflow-hidden border border-white/80 bg-white shadow-card-premium animate-float [animation-delay:0.6s]">
           <img src={logo} alt="Logo" className="w-full h-full object-cover scale-[2]" />
         </div>
 
-        <h1 className="text-[26px] font-extrabold text-stone-800 tracking-tight text-center">
+        <h1 className="font-display text-[27px] font-extrabold text-stone-800 tracking-tight text-center animate-fade-in">
           Welcome to To-Do
         </h1>
-        <p className="text-[13px] font-medium text-stone-400 mt-2 text-center max-w-[240px] leading-relaxed">
+        <p className="text-[13px] font-medium text-stone-400 mt-2 text-center max-w-[240px] leading-relaxed animate-fade-in [animation-delay:0.08s]">
           Organise your tasks elegantly.<br />Simplicity at its peak.
         </p>
 
-        <div className="mt-10 w-full flex flex-col items-center">
+        <div className="mt-10 w-full flex flex-col items-center animate-fade-in [animation-delay:0.16s]">
           <button
             onClick={handleGoogleLogin}
             disabled={isOpening}
-            className="w-full max-w-[280px] h-[50px] rounded-xl border border-stone-200 bg-white hover:bg-terra-hover active:bg-terra-alt transition-all duration-200 flex items-center justify-center gap-3 shadow-card hover:shadow-card-hover disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full max-w-[280px] h-[52px] rounded-xl border border-stone-200/80 bg-white hover:bg-terra-hover active:bg-terra-alt active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-3 shadow-card-premium hover:shadow-card-hover hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0"
           >
             {isOpening ? (
-              <div className="w-5 h-5 rounded-full border-[2.5px] border-stone-200 border-t-amber-600 animate-spin" />
+              <div className="w-5 h-5 rounded-full border-[2.5px] border-stone-200 border-t-accent animate-spin" />
             ) : (
               <>
                 <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
@@ -59,14 +63,14 @@ const AuthGateway = () => {
           </button>
 
           {error && (
-            <p className="text-xs font-medium text-danger mt-3 text-center max-w-[280px]">
+            <p className="text-xs font-medium text-danger mt-3 text-center max-w-[280px] animate-fade-in">
               {error}
             </p>
           )}
         </div>
       </div>
 
-      <div className="pb-6 sm:pb-8 text-center">
+      <div className="relative pb-6 sm:pb-8 text-center">
         <p className="text-[10px] font-medium text-stone-300">
           Your tasks stay private on this device
         </p>

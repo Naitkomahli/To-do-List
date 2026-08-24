@@ -52,7 +52,7 @@ const ProfileDropdown = () => {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-1 hover:bg-terra-hover rounded-full pr-2 pl-0.5 py-0.5 transition-colors"
       >
-        <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full overflow-hidden border border-stone-100 bg-stone-100">
+        <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full overflow-hidden border border-white/70 ring-1 ring-stone-200/60 bg-stone-100 transition-transform active:scale-95">
           {avatarError || !user.avatar ? (
             <div className="w-full h-full flex items-center justify-center">
               <span className="text-xs font-bold text-stone-500">{getInitial(user.name)}</span>
@@ -70,7 +70,7 @@ const ProfileDropdown = () => {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-11 w-56 bg-white rounded-2xl shadow-warm border border-stone-100 p-3 z-50 animate-fade-in origin-top-right">
+        <div className="absolute right-0 top-11 w-56 bg-white rounded-2xl shadow-warm border border-stone-100/80 p-3 z-50 animate-fade-in origin-top-right">
           <div className="flex items-center gap-3 pb-3 border-b border-stone-100">
             {avatarError || !user.avatar ? (
               <div className="w-9 h-9 rounded-full bg-amber-50 border border-amber-100 flex items-center justify-center">
@@ -94,7 +94,7 @@ const ProfileDropdown = () => {
             {deferredPrompt && (
               <button
                 onClick={handleInstallClick}
-                className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-amber-600 hover:bg-amber-50 transition-all text-[11px] font-semibold text-left"
+                className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-accent hover:bg-amber-light transition-all duration-150 hover:translate-x-0.5 text-[11px] font-semibold text-left"
               >
                 <Download className="w-4 h-4" />
                 <span>Install App</span>
@@ -103,7 +103,7 @@ const ProfileDropdown = () => {
 
             <button
               onClick={() => { logout(); setIsOpen(false); }}
-              className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-danger hover:bg-danger-light transition-all text-[11px] font-semibold text-left"
+              className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-danger hover:bg-danger-light transition-all duration-150 hover:translate-x-0.5 text-[11px] font-semibold text-left"
             >
               <LogOut className="w-4 h-4" />
               <span>Sign Out</span>

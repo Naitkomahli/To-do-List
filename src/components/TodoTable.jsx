@@ -107,7 +107,7 @@ const TodoTable = ({ onCompleteAction }) => {
     setActiveSection(null);
   };
 
-  const handleKeyPressNew = (e, type) => {
+  const handleKeyPressNew = (e) => {
     if (e.key === 'Escape') {
       setActiveSection(null);
       setNewText('');
@@ -125,7 +125,7 @@ const TodoTable = ({ onCompleteAction }) => {
     setEditingTaskId(null);
   };
 
-  const handleKeyPressEdit = (e, id) => {
+  const handleKeyPressEdit = (e) => {
     if (e.key === 'Escape') setEditingTaskId(null);
   };
 
@@ -364,6 +364,7 @@ const TodoTable = ({ onCompleteAction }) => {
                             className="w-full bg-white border border-neutral-200 rounded-lg px-2.5 py-1.5 text-sm sm:text-base font-semibold text-neutral-900 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
                           />
                           </form>
+                        ) : (
                           <div className="flex items-center gap-2 flex-wrap">
                             <span
                               onClick={() => handleStartEdit(task)}

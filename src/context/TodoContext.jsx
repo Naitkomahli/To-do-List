@@ -51,6 +51,7 @@ export const TodoProvider = ({ children }) => {
     return null;
   });
   const [authLoading, setAuthLoading] = useState(true);
+  const [tasksLoading, setTasksLoading] = useState(true);
   const [tasks, setTasks] = useState([]);
   const [todayDate, setTodayDate] = useState(getTodayDate());
 
@@ -140,6 +141,7 @@ export const TodoProvider = ({ children }) => {
         return aTime - bTime;
       });
       setTasks(loadedTasks);
+      setTasksLoading(false);
     }, (error) => {
       console.error('Firestore snapshot error:', error);
     });
@@ -313,6 +315,7 @@ export const TodoProvider = ({ children }) => {
   const value = {
     user,
     authLoading,
+    tasksLoading,
     tabView,
     timeframe,
     tasks,

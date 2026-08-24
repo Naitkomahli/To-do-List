@@ -18,9 +18,9 @@ function MainAppContent() {
     return (
       <DeviceFrame>
           <div className="flex-1 flex items-center justify-center bg-surface">
-            <div className="flex flex-col items-center gap-4">
-              <div className="w-8 h-8 rounded-full border-[3px] border-slate-200 border-t-accent animate-spin" />
-            <p className="text-sm text-neutral-400 font-medium">Loading...</p>
+          <div className="flex flex-col items-center gap-4">
+              <div className="w-8 h-8 rounded-full border-[3px] border-stone-100 border-t-accent animate-spin" />
+            <p className="font-display text-sm text-stone-400 font-semibold">Loading...</p>
           </div>
         </div>
       </DeviceFrame>

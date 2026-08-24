@@ -33,7 +33,7 @@ const Dashboard = ({ onCompleteAction }) => {
 
   return (
     <div className="flex-1 flex flex-col bg-terra select-none overflow-hidden min-h-screen">
-      <div className="sticky top-0 z-30 bg-terra/90 backdrop-blur-md">
+      <div className="sticky top-0 z-30 bg-terra/90 backdrop-blur-md after:content-[''] after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-gradient-to-r after:from-transparent after:via-stone-200/60 after:to-transparent">
         <div className="h-12 sm:h-14 w-full flex items-center justify-between px-4 sm:px-5">
           <div className="w-8 sm:w-9" />
           <SegmentedControl
