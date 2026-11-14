@@ -62,6 +62,8 @@ const TodoListView = ({ onCompleteAction }) => {
     todayCompleted,
     todayTotal,
     todayCompletionPercentage,
+    activeProjectId,
+    projects,
   } = useTodo();
 
   const [isAdding, setIsAdding] = useState(false);
@@ -175,8 +177,16 @@ const TodoListView = ({ onCompleteAction }) => {
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-100 flex items-center justify-center mb-4 animate-float">
               <ListTodo className="w-7 h-7 text-amber-400" />
             </div>
-            <h4 className="text-sm font-bold text-stone-500 mb-1">Tidak ada tugas hari ini</h4>
-            <p className="text-xs font-medium text-stone-400 max-w-[200px]">Tambah tugas baru untuk memulai hari.</p>
+            <h4 className="text-sm font-bold text-stone-500 mb-1">
+              {activeProjectId === 'all'
+                ? 'Tidak ada tugas hari ini'
+                : `Belum ada tugas di ${projects.find(p => p.id === activeProjectId)?.name || 'project ini'}`}
+            </h4>
+            <p className="text-xs font-medium text-stone-400 max-w-[200px]">
+              {activeProjectId === 'all'
+                ? 'Tambah tugas baru untuk memulai hari.'
+                : 'Tugas baru otomatis masuk ke project ini.'}
+            </p>
           </div>
         ) : (
           todayTasks.map((task) => {

@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import { useTodo } from '../context/TodoContext';
 import SegmentedControl from './SegmentedControl';
 import ProgressCard from './ProgressCard';
+import ProjectBar from './ProjectBar';
 import TodoListView from './TodoListView';
 import HabitsView from './HabitsView';
 import ProfileDropdown from './ProfileDropdown';
@@ -53,6 +54,7 @@ const Dashboard = ({ onCompleteAction }) => {
         onTouchEnd={handleTouchEnd}
       >
         <ProgressCard />
+        {tabView === 'To-Do List' && <ProjectBar />}
         <div className="flex-1 min-h-0 flex flex-col">
           {tabView === 'To-Do List' ? (
             <TodoListView onCompleteAction={onCompleteAction} />

@@ -55,6 +55,18 @@ export const TodoProvider = ({ children }) => {
   const [tasks, setTasks] = useState([]);
   const [todayDate, setTodayDate] = useState(getTodayDate());
 
+  // ─── Projects ───
+  const [projects, setProjects] = useState([]);
+  const [projectsLoading, setProjectsLoading] = useState(true);
+  const [activeProjectId, setActiveProjectIdState] = useState(() => {
+    return localStorage.getItem('todo_activeProject') || 'all';
+  });
+
+  const setActiveProjectId = useCallback((id) => {
+    setActiveProjectIdState(id);
+    localStorage.setItem('todo_activeProject', id);
+  }, []);
+
   // ─── Detect pergantian hari (cek tiap menit) ───
   useEffect(() => {
     const checkDate = () => {
@@ -88,6 +100,8 @@ export const TodoProvider = ({ children }) => {
       } else {
         setUser(null);
         setTasks([]); // Reset tasks saat user logout
+        setProjects([]);
+        setProjectsLoading(false);
       }
       setAuthLoading(false);
     });
@@ -149,24 +163,6 @@ export const TodoProvider = ({ children }) => {
     return unsubscribe;
   }, [user]);
 
-  // ─── Auto-reset daily task ketika hari berganti ───
-  // Task dengan timeframe 'Today' yang date-nya bukan hari ini akan di-reset
-  // (completed = false, date = hari ini) sehingga berperilaku sebagai recurring daily task.
-  useEffect(() => {
-    if (!user || !user.uid || tasks.length === 0) return;
-    tasks.forEach((task) => {
-      if (
-        task.timeframe === 'Today' &&
-        task.date !== todayDate
-      ) {
-        updateDoc(doc(db, 'tasks', task.id), {
-          completed: false,
-          date: todayDate
-        }).catch((err) => console.error('Failed to reset daily task:', err));
-      }
-    });
-  }, [tasks, todayDate, user]);
-
   // ─── Auto-reset weekly history ketika minggu berganti ───
   useEffect(() => {
     if (!user || !user.uid || tasks.length === 0) return;
@@ -183,6 +179,73 @@ export const TodoProvider = ({ children }) => {
       });
     }
   }, [tasks, todayDate, user]);
+
+  // ─── Projects ───
+  useEffect(() => {
+    if (!user || !user.uid) return;
+    const q = query(
+      collection(db, 'projects'),
+      where('uid', '==', user.uid)
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const loadedProjects = snapshot.docs.map((docSnap) => ({
+        id: docSnap.id,
+        ...docSnap.data()
+      }));
+      loadedProjects.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+      setProjects(loadedProjects);
+      setProjectsLoading(false);
+    }, (error) => {
+      console.error('Projects snapshot error:', error);
+      setProjectsLoading(false);
+    });
+
+    return unsubscribe;
+  }, [user]);
+
+  // Project aktif yang sudah tidak ada (dihapus di device lain) → dianggap Semua
+  const effectiveProjectId = projectsLoading
+    ? activeProjectId
+    : (activeProjectId === 'all' || projects.some(p => p.id === activeProjectId) ? activeProjectId : 'all');
+
+  const addProject = useCallback(async (name) => {
+    if (!user || !user.uid || !name?.trim()) return;
+    try {
+      const projectRef = await addDoc(collection(db, 'projects'), {
+        uid: user.uid,
+        name: name.trim(),
+        order: projects.length,
+        createdAt: serverTimestamp()
+      });
+      setActiveProjectId(projectRef.id);
+    } catch (error) {
+      console.error('Failed to add project:', error);
+    }
+  }, [user, projects.length, setActiveProjectId]);
+
+  const renameProject = useCallback(async (id, name) => {
+    if (!name?.trim()) return;
+    try {
+      await updateDoc(doc(db, 'projects', id), { name: name.trim() });
+    } catch (error) {
+      console.error('Failed to rename project:', error);
+    }
+  }, []);
+
+  // Hapus project, tapi tugasnya dipindah ke Semua (jangan hilangkan data user)
+  const deleteProject = useCallback(async (id) => {
+    const affected = tasks.filter(t => t.projectId === id);
+    try {
+      await Promise.all(affected.map(t =>
+        updateDoc(doc(db, 'tasks', t.id), { projectId: null })
+      ));
+      await deleteDoc(doc(db, 'projects', id));
+      if (activeProjectId === id) setActiveProjectId('all');
+    } catch (error) {
+      console.error('Failed to delete project:', error);
+    }
+  }, [tasks, activeProjectId, setActiveProjectId]);
 
   // ─── Categories ───
   const [categories] = useState([
@@ -238,13 +301,19 @@ export const TodoProvider = ({ children }) => {
   }, [tasks]);
 
   // ─── Add Task ───
-  const addTask = useCallback(async (text, category = 'Category', taskTimeframe = timeframe) => {
+  const addTask = useCallback(async (
+    text,
+    category = 'Category',
+    taskTimeframe = timeframe,
+    projectId = effectiveProjectId === 'all' ? null : effectiveProjectId
+  ) => {
     if (!user || !user.uid) return;
     const newTask = {
       uid: user.uid,
       text,
       category,
       timeframe: taskTimeframe,
+      projectId,
       createdAt: serverTimestamp(),
       ...(taskTimeframe === 'This Week'
         ? { history: [false, false, false, false, false, false, false] }
@@ -256,7 +325,7 @@ export const TodoProvider = ({ children }) => {
     } catch (error) {
       console.error('Failed to add task:', error);
     }
-  }, [user, timeframe]);
+  }, [user, timeframe, effectiveProjectId]);
 
   // ─── Delete Task ───
   const deleteTask = useCallback(async (id) => {
@@ -287,7 +356,8 @@ export const TodoProvider = ({ children }) => {
 
   // ─── Computed stats ───
   // Tampilkan semua task 'Today' sebagai daily recurring (status reset otomatis oleh effect di atas)
-  const todayTasks = tasks.filter(t => t.timeframe === 'Today');
+  const matchProject = (task) => effectiveProjectId === 'all' || task.projectId === effectiveProjectId;
+  const todayTasks = tasks.filter(t => t.timeframe === 'Today' && matchProject(t));
   const weeklyTasks = tasks.filter(t => t.timeframe === 'This Week');
 
   const todayTotal = todayTasks.length;
@@ -316,6 +386,9 @@ export const TodoProvider = ({ children }) => {
     user,
     authLoading,
     tasksLoading,
+    projects,
+    projectsLoading,
+    activeProjectId: effectiveProjectId,
     tabView,
     timeframe,
     tasks,
@@ -334,6 +407,10 @@ export const TodoProvider = ({ children }) => {
     weeklyRemaining,
     setTabView,
     setTimeframe,
+    setActiveProjectId,
+    addProject,
+    renameProject,
+    deleteProject,
     loginWithGoogle,
     logout,
     toggleTask,
